@@ -142,7 +142,8 @@ class AbsTaskClassification(AbsTask):
             else:
                 raise ValueError(f"Method {self.method} not supported")
 
-            scores_exp, test_cache = evaluator(model, test_cache=test_cache)
+            reference_model = kwargs['reference_model'] if 'reference_model' in kwargs else None
+            scores_exp, test_cache = evaluator(model, reference_model=reference_model, test_cache=test_cache)
             scores.append(scores_exp)
 
         if self.n_experiments == 1:

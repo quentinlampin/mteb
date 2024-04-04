@@ -241,7 +241,7 @@ class logRegClassificationEvaluator(Evaluator):
         self.max_iter = max_iter
         self.batch_size = batch_size
 
-    def __call__(self, model, test_cache=None):
+    def __call__(self, model, reference_model=None, test_cache=None):
         scores = {}
         clf = LogisticRegression(
             random_state=self.seed,
@@ -249,9 +249,15 @@ class logRegClassificationEvaluator(Evaluator):
             max_iter=self.max_iter,
             verbose=1 if logger.isEnabledFor(logging.DEBUG) else 0,
         )
+        
+        if reference_model is None:
+            reference_model = model
+        else:
+            logger.info("using a reference model to train the classifier")
+            
         logger.info(f"Encoding {len(self.sentences_train)} training sentences...")
         X_train = np.asarray(
-            model.encode(self.sentences_train, batch_size=self.batch_size)
+            reference_model.encode(self.sentences_train, batch_size=self.batch_size)
         )
         logger.info(f"Encoding {len(self.sentences_test)} test sentences...")
         if test_cache is None:
